@@ -337,9 +337,11 @@ class EditTextWidgetState extends State<EditTextWidget>
       if(widget.controller.selectedObjectDrawable != null) {
         // Removed Old drawable and add new as edited text is not reflecting on update method
         setState(() {
-          widget.controller.removeDrawable(widget.controller.selectedObjectDrawable as TextDrawable);
+          var hiddenDraw = widget.controller.drawables.where((element) => (element.isHidden && element is TextDrawable)).toList();
+          if(hiddenDraw != null) {
+            widget.controller.removeDrawable(hiddenDraw.first);
+          }
           widget.controller.addDrawables([drawable]);
-          // widget.controller.selectObjectDrawable(drawable);
         });
       } else {
         setState(() {
