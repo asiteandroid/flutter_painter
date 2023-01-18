@@ -313,6 +313,10 @@ class EditTextWidgetState extends State<EditTextWidget>
     if (textEditingController.text.trim().isEmpty) {
       widget.controller.removeDrawable(widget.drawable);
       if (!widget.isNew) {
+        var hiddenDraw = widget.controller.drawables.where((element) => (element.isHidden && element is TextDrawable)).toList();
+        if(hiddenDraw != null) {
+          widget.controller.removeDrawable(hiddenDraw.first);
+        }
         DrawableDeletedNotification(widget.drawable).dispatch(context);
       }
     } else {
