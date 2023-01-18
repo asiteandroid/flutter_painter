@@ -294,6 +294,15 @@ class EditTextWidgetState extends State<EditTextWidget>
     if (!mounted) return;
     if (!textFieldNode.hasFocus) {
       onEditingComplete();
+    } else {
+      // Added to hide selected text drawable as it overlaps with text in ios/android phones
+      if(widget.controller.selectedObjectDrawable != null) {
+        var textDraw = widget.controller.selectedObjectDrawable as TextDrawable;
+        setState(() {
+          widget.controller.replaceDrawable(textDraw,textDraw.copyWith(hidden: true));
+          widget.controller.deselectObjectDrawable();
+        });
+      }
     }
   }
 
@@ -307,12 +316,36 @@ class EditTextWidgetState extends State<EditTextWidget>
         DrawableDeletedNotification(widget.drawable).dispatch(context);
       }
     } else {
-      final drawable = widget.drawable.copyWith(
+      // Select last drawable after editing complete.
+      if(!widget.isNew && widget.drawable != null) {
+        setState(() {
+          widget.controller.value = widget.controller.value.copyWith(
+            selectedObjectDrawable: widget.drawable,
+          );
+        });
+      }
+      final drawable = (widget.controller.selectedObjectDrawable != null) ? (widget.controller.selectedObjectDrawable as TextDrawable).copyWith(
+        text: textEditingController.text.trim(),
+        style: settings.textStyle,
+        hidden: false,
+      ) : widget.drawable.copyWith(
         text: textEditingController.text.trim(),
         style: settings.textStyle,
         hidden: false,
       );
-      updateDrawable(widget.drawable, drawable);
+
+      if(widget.controller.selectedObjectDrawable != null) {
+        // Removed Old drawable and add new as edited text is not reflecting on update method
+        setState(() {
+          widget.controller.removeDrawable(widget.controller.selectedObjectDrawable as TextDrawable);
+          widget.controller.addDrawables([drawable]);
+          // widget.controller.selectObjectDrawable(drawable);
+        });
+      } else {
+        setState(() {
+          updateDrawable(widget.drawable, drawable);
+        });
+      }
       if (widget.isNew) DrawableCreatedNotification(drawable).dispatch(context);
     }
     if (mounted && !disposed) {
