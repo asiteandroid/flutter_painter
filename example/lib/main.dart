@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Flutter Painter Example",
       theme: ThemeData(
-          primaryColor: Colors.brown, accentColor: Colors.amberAccent),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.brown).copyWith(secondary:Colors.amberAccent)),
       home: const FlutterPainterExample(),
     );
   }
