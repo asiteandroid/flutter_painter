@@ -27,6 +27,7 @@ class BorderBoxShadow extends BoxShadow {
   Paint toPaint() {
     final Paint result = Paint()
       ..color = color
+      ..style = PaintingStyle.stroke
       ..maskFilter = MaskFilter.blur(blurStyle, blurSigma);
     assert(() {
       if (debugDisableShadows) result.maskFilter = null;
