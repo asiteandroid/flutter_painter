@@ -49,71 +49,83 @@ class _ShapeWidgetState extends State<_ShapeWidget> {
   }
 
   void onScaleUpdate(ScaleUpdateDetails details) {
-    final shapeDrawable = currentShapeDrawable;
+    if(currentShapeDrawable != null) {
+      final shapeDrawable = currentShapeDrawable;
 
-    if (shapeDrawable == null) return;
+      if (shapeDrawable == null) return;
 
-    if (shapeDrawable is Sized1DDrawable) {
-      final sized1DDrawable = (shapeDrawable as Sized1DDrawable);
-      final length = sized1DDrawable.length;
-      final startingPosition = shapeDrawable.position -
-          Offset.fromDirection(sized1DDrawable.rotationAngle, length / 2);
-      final newLine = (details.localFocalPoint - startingPosition);
-      final newPosition = startingPosition +
-          Offset.fromDirection(newLine.direction, newLine.distance / 2);
-      final newDrawable = sized1DDrawable.copyWith(
-        position: newPosition,
-        length: newLine.distance.abs(),
-        rotation: newLine.direction,
-      );
-      currentShapeDrawable = (newDrawable as ShapeDrawable);
-      updateDrawable(sized1DDrawable, newDrawable);
-    } else if (shapeDrawable is Sized2DDrawable) {
-      final sized2DDrawable = (shapeDrawable as Sized2DDrawable);
-      final size = sized2DDrawable.size;
-      final startingPosition =
-          shapeDrawable.position - Offset(size.width / 2, size.height / 2);
+      if (shapeDrawable is Sized1DDrawable) {
+        final sized1DDrawable = (shapeDrawable as Sized1DDrawable);
+        final length = sized1DDrawable.length;
+        final startingPosition = shapeDrawable.position -
+            Offset.fromDirection(sized1DDrawable.rotationAngle, length / 2);
+        final newLine = (details.localFocalPoint - startingPosition);
+        final newPosition = startingPosition +
+            Offset.fromDirection(newLine.direction, newLine.distance / 2);
+        final newDrawable = sized1DDrawable.copyWith(
+          position: newPosition,
+          length: newLine.distance.abs(),
+          rotation: newLine.direction,
+        );
+        currentShapeDrawable = (newDrawable as ShapeDrawable);
+        updateDrawable(sized1DDrawable, newDrawable);
+      } else if (shapeDrawable is Sized2DDrawable) {
+        final sized2DDrawable = (shapeDrawable as Sized2DDrawable);
+        final size = sized2DDrawable.size;
+        final startingPosition =
+            shapeDrawable.position - Offset(size.width / 2, size.height / 2);
 
-      final newSize = Size((details.localFocalPoint.dx - startingPosition.dx),
-          (details.localFocalPoint.dy - startingPosition.dy));
-      final newPosition =
-          startingPosition + Offset(newSize.width / 2, newSize.height / 2);
-      final newDrawable = sized2DDrawable.copyWith(
-        position: newPosition,
-        size: newSize,
-      );
-      currentShapeDrawable = (newDrawable as ShapeDrawable);
-      updateDrawable(sized2DDrawable, newDrawable);
+        final newSize = Size((details.localFocalPoint.dx - startingPosition.dx),
+            (details.localFocalPoint.dy - startingPosition.dy));
+        final newPosition =
+            startingPosition + Offset(newSize.width / 2, newSize.height / 2);
+        final newDrawable = sized2DDrawable.copyWith(
+          position: newPosition,
+          size: newSize,
+        );
+        currentShapeDrawable = (newDrawable as ShapeDrawable);
+        updateDrawable(sized2DDrawable, newDrawable);
+      }
     }
   }
 
   void onScaleEnd(ScaleEndDetails details) {
-    final shapeDrawable = currentShapeDrawable;
-    if (shapeDrawable is Sized2DDrawable) {
-      final sized2DDrawable = (shapeDrawable as Sized2DDrawable);
-      final newDrawable = sized2DDrawable.copyWith(
-        size: Size(
-          sized2DDrawable.size.width.abs(),
-          sized2DDrawable.size.height.abs(),
-        ),
-      );
-      updateDrawable(sized2DDrawable as ShapeDrawable, newDrawable);
-    }
-    if (settings.drawOnce) {
-      PainterController.of(context).settings =
-          PainterController.of(context).settings.copyWith(
-                  shape: settings.copyWith(
-                factory: null,
-              ));
-      SettingsUpdatedNotification(PainterController.of(context).value.settings)
-          .dispatch(context);
-    }
+    if(currentShapeDrawable != null) {
+      final shapeDrawable = currentShapeDrawable;
+      if (shapeDrawable is Sized2DDrawable) {
+        final sized2DDrawable = (shapeDrawable as Sized2DDrawable);
+        final newDrawable = sized2DDrawable.copyWith(
+          size: Size(
+            sized2DDrawable.size.width.abs(),
+            sized2DDrawable.size.height.abs(),
+          ),
+        );
+        updateDrawable(sized2DDrawable as ShapeDrawable, newDrawable);
+      }
+      if (settings.drawOnce) {
+        PainterController
+            .of(context)
+            .settings =
+            PainterController
+                .of(context)
+                .settings
+                .copyWith(
+                shape: settings.copyWith(
+                  factory: null,
+                ));
+        SettingsUpdatedNotification(PainterController
+            .of(context)
+            .value
+            .settings)
+            .dispatch(context);
+      }
 
-    DrawableCreatedNotification(currentShapeDrawable).dispatch(context);
+      DrawableCreatedNotification(currentShapeDrawable).dispatch(context);
 
-    setState(() {
-      currentShapeDrawable = null;
-    });
+      setState(() {
+        currentShapeDrawable = null;
+      });
+    }
   }
 
   /// Replaces a drawable with a new one.
