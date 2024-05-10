@@ -910,6 +910,7 @@ class _ObjectWidgetState extends State<_ObjectWidget> {
   void onScaleControlPanUpdate(MapEntry<int, ObjectDrawable> entry,
       DragUpdateDetails details, BoxConstraints constraints,
       [bool isReversed = true]) {
+    print("onScaleControlPanUpdate");
     final index = entry.key;
     final initial = initialScaleDrawables[index];
     if (initial == null) return;
@@ -970,8 +971,7 @@ class _ObjectWidgetState extends State<_ObjectWidget> {
     final initialLength = vertical ? initial.size.height : initial.size.width;
 
     final totalLength = (length / initial.scale + initialLength)
-        .clamp(0, double.infinity) as double;
-
+        .clamp(0, double.infinity).toDouble();
     // final double scale = initialLength == 0 ?
     //   (length*2).clamp(0.001, double.infinity) :
     //   ((length + initialLength) / initialLength).clamp(0.001, double.infinity);
