@@ -910,7 +910,6 @@ class _ObjectWidgetState extends State<_ObjectWidget> {
   void onScaleControlPanUpdate(MapEntry<int, ObjectDrawable> entry,
       DragUpdateDetails details, BoxConstraints constraints,
       [bool isReversed = true]) {
-    print("onScaleControlPanUpdate");
     final index = entry.key;
     final initial = initialScaleDrawables[index];
     if (initial == null) return;
